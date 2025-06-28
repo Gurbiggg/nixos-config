@@ -68,8 +68,12 @@
     };
   };
 
+  programs.fish.enable = true;
+  programs.dconf.enable = true;
+
   # Enable Flatpak
   services.flatpak.enable = true;
+  xdg.portal.enable = true;
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -93,6 +97,7 @@
   users.users.gurbiggg = {
     description = "Gehrig Dixon";
     isNormalUser = true;
+    shell = pkgs.fish;
     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
     ];
@@ -100,10 +105,11 @@
 
   # programs.firefox.enable = true;
 
+  nixpkgs.config.allowUnfree = true;
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
-    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     tree 
   ];
@@ -120,6 +126,29 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  # Enable nvidia drivers
+  #Nvidia settings for hybrid graphics(AMD video cores and Nvidia)
+  #environment.systemPackages = [ nvidia-offload ];
+  hardware.graphics.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia = {
+    # Use Proprietary drivers
+    open = false;
+
+    #Fixes a glitch
+    nvidiaPersistenced = true;
+    #Required for amdgpu and nvidia gpu pairings
+    modesetting.enable = true;
+    prime = {
+      offload.enable = true;
+      #sync.enable = true;
+
+      amdgpuBusId = "PCI:5:0:0";
+
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
